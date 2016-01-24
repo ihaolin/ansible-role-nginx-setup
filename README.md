@@ -54,7 +54,8 @@ Example
 		  sudo: yes
 		  roles:
 		    - {
-			    role: ihaolin.nginx-setup			    # other variables
+			    role: ihaolin.nginx-setup
+			    # other variables
 		      }
 		       		  	   
 		  	   
