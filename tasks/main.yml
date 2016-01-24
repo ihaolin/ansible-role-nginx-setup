@@ -23,7 +23,7 @@
   unarchive:
     src={{NGINX_FILE}}
     dest=/tmp
-    # copy=no # comment this if ansible version < 2.0.0
+    copy=no # comment this if ansible version < 2.0.0
 
 # build
 - name: 'build nginx...'
