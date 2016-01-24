@@ -1,0 +1,55 @@
+---
+# tasks file for ansible-role-nginx-setup
+
+# prepare packages
+- name: 'prepare packages'
+  yum: name={{item}} state=present
+  with_items:
+     - gcc
+     - gcc-c++
+     - make
+     - zlib-devel
+     - pcre-devel
+     - openssl-devel
+
+# setup account
+- name: 'setup group'
+  group: name={{NGINX_GROUP}} state=present
+- name: 'setup user'
+  user: name={{NGINX_USER}} group={{NGINX_GROUP}} shell=/bin/nologin state=present
+
+# download
+- name: 'download nginx...'
+  unarchive:
+    src={{NGINX_FILE}}
+    dest=/tmp
+    # copy=no # comment this if ansible version < 2.0.0
+
+# build
+- name: 'build nginx...'
+  command: chdir=/tmp/nginx-{{NGINX_VERSION}} {{item}}
+  with_items:
+     - './configure {{COMPILE_OPTIONS}}'
+     - make
+     - make install
+- file: path=/tmp/nginx-{{NGINX_VERSION}} state=absent
+
+# basic conf
+- name: 'conf setup...'
+  template: src=conf.j2 dest={{CONF_PATH}}
+
+# path permission
+- file: path={{INSTALL_PATH}} owner={{NGINX_USER}} group={{NGINX_GROUP}}
+
+# service setup
+- name: 'service setup...'
+  template: src=service.j2 dest=/etc/init.d/nginx mode=u+x
+- command: '{{item}}'
+  with_items:
+     - chkconfig --add nginx
+     - chkconfig --level 345 nginx on
+
+# start service
+- name: 'start service'
+  service: name=nginx state=started
+
