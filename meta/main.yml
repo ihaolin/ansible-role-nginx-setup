@@ -13,8 +13,6 @@ galaxy_info:
 
   platforms:
   - name: Centos
-    versions:
-    - 6.5 Final
 
   galaxy_tags:
     - server
